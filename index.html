@@ -175,7 +175,6 @@
     box-shadow:0 4px 0 #0d0a18;
     transition:transform .08s ease,background .12s ease,border-color .12s ease;
   }
-  button:hover{background:var(--ink-3);border-color:var(--pink-deep);}
   button:active{transform:translateY(3px);box-shadow:0 1px 0 #0d0a18;}
   button:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
   button .n{color:var(--pink);margin-right:8px;}
@@ -186,7 +185,12 @@
     text-align:center;
     font-size:19px;
   }
-  button.go:hover{background:#ff69ab;border-color:var(--pink-deep);}
+  /* подсветка только там, где есть настоящая мышь: на телефоне hover залипает */
+  @media (hover:hover) and (pointer:fine){
+    button:hover{background:var(--ink-3);border-color:var(--pink-deep);}
+    button.go:hover{background:#ff69ab;border-color:var(--pink-deep);}
+    .sign a:hover{color:#ff7ab8;}
+  }
 
   .finale{
     border-left:3px solid var(--pink);
@@ -198,8 +202,8 @@
   .finale p{margin:0;font-size:16px;line-height:1.6;}
   .sign{font-family:'Pixelify Sans',monospace;font-size:16px;color:var(--gold);}
   .sign a{color:var(--pink);text-decoration:none;border-bottom:2px solid var(--pink-deep);}
-  .sign a:hover{color:#ff7ab8;}
   .sign a:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+  .wait.lead{margin-top:26px;}
   .wait{
     margin:6px 0 0;
     font-family:'Pixelify Sans',monospace;
@@ -856,7 +860,7 @@ function showFinal(){
   elSay.textContent = '';
   const box = document.createElement('div'); box.className = 'finale';
   FINAL.lines.forEach(l=>{ const p = document.createElement('p'); p.textContent = l; box.appendChild(p); });
-  const nt = document.createElement('p'); nt.className = 'wait'; nt.textContent = FINAL.note;
+  const nt = document.createElement('p'); nt.className = 'wait lead'; nt.textContent = FINAL.note;
   box.appendChild(nt);
   const sg = document.createElement('p'); sg.className = 'sign';
   sg.appendChild(document.createTextNode('— tg: '));
