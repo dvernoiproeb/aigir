@@ -203,6 +203,7 @@
   .sign{font-family:'Pixelify Sans',monospace;font-size:16px;color:var(--gold);}
   .sign a{color:var(--pink);text-decoration:none;border-bottom:2px solid var(--pink-deep);}
   .sign a:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+  .sign + .sign{margin-top:-4px;}
   .wait.lead{margin-top:26px;}
   .wait{
     margin:6px 0 0;
@@ -753,6 +754,7 @@ const FINAL = {
   ],
   note:'мечтаю увидеть эту улыбку вновь',
   handle:'dvernoiproeb',
+  handle2:'alexeyodino',
   wait:'я всё ещё жду'
 };
 
@@ -871,6 +873,15 @@ function showFinal(){
   a.textContent = FINAL.handle;
   sg.appendChild(a);
   box.appendChild(sg);
+  const sg2 = document.createElement('p'); sg2.className = 'sign';
+  sg2.appendChild(document.createTextNode('— ну или inst: '));
+  const a2 = document.createElement('a');
+  a2.href = 'https://instagram.com/' + FINAL.handle2;
+  a2.target = '_blank';
+  a2.rel = 'noopener noreferrer';
+  a2.textContent = FINAL.handle2;
+  sg2.appendChild(a2);
+  box.appendChild(sg2);
   const wt = document.createElement('p'); wt.className = 'wait'; wt.textContent = FINAL.wait;
   box.appendChild(wt);
   const st = document.createElement('div'); st.className = 'stats';
