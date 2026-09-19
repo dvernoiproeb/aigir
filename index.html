@@ -1,0 +1,915 @@
+ТЕСТ-СТРОКА-1
+ТЕСТ-СТРОКА-2<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#171027">
+<meta name="description" content="Мини-квест: восхождение на Айгир в розовых кроссовках.">
+<meta property="og:title" content="Айгир">
+<meta property="og:description" content="Наведи камеру и поднимись на гору.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23171027'/%3E%3Cpath d='M2 13 L6 5 L8.5 9 L10.5 6.5 L14 13 Z' fill='%23a98cc0'/%3E%3Crect x='5' y='11' width='2' height='2' fill='%23ff4f9a'/%3E%3C/svg%3E">
+<style>
+  html,body{height:100%;margin:0;}
+  *{box-sizing:border-box;}
+  img{max-width:100%;}
+  [hidden]{display:none!important;}
+  :root{
+    color-scheme:dark;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+</style>
+<title>Айгир для Дианы</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;800&family=Pixelify+Sans:wght@400;600;700&display=swap">
+<style>
+  :root{
+    --ink:#171027;
+    --ink-2:#221735;
+    --ink-3:#2e2044;
+    --cream:#fff2e2;
+    --muted:#b4a3c9;
+    --pink:#ff4f9a;
+    --pink-deep:#c2286f;
+    --teal:#17b8a6;
+    --gold:#ffc53d;
+    --line:#3c2b57;
+  }
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--cream);
+    font-family:'Onest',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  *{box-sizing:border-box;}
+
+  .wrap{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    max-width:460px;
+    margin:0 auto;
+    padding-inline:14px;
+    padding-block:12px 18px;
+    gap:12px;
+  }
+
+  /* ——— сцена ——— */
+  .stage{
+    position:relative;
+    border:3px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    background:#0d0a18;
+    box-shadow:0 8px 0 rgba(0,0,0,.35);
+  }
+  canvas{
+    display:block;
+    width:100%;
+    max-width:100%;
+    aspect-ratio:160/96;
+    height:auto;
+    image-rendering:pixelated;
+    image-rendering:crisp-edges;
+  }
+  .hud{
+    position:absolute;
+    inset:auto 0 0 0;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:8px;
+    padding:6px 7px;
+    pointer-events:none;
+    background:linear-gradient(to top,rgba(13,10,24,.82),rgba(13,10,24,0));
+  }
+  .step{
+    font-family:'Pixelify Sans',monospace;
+    font-size:12px;
+    letter-spacing:.06em;
+    color:var(--gold);
+    text-shadow:0 2px 0 #0d0a18;
+    flex:none;
+  }
+  .bag{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;}
+  .chip{
+    font-family:'Pixelify Sans',monospace;
+    font-size:10px;
+    letter-spacing:.06em;
+    padding:2px 5px;
+    border:2px solid var(--pink-deep);
+    background:rgba(23,16,39,.9);
+    color:var(--pink);
+  }
+
+  /* ——— панель ——— */
+  .panel{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .title{
+    font-family:'Pixelify Sans',monospace;
+    font-weight:700;
+    font-size:clamp(38px,13vw,54px);
+    line-height:1.04;
+    letter-spacing:.02em;
+    margin:0;
+    padding-top:2px;
+    color:var(--gold);
+    text-shadow:3px 3px 0 var(--pink-deep);
+    text-wrap:balance;
+  }
+  .sub{
+    font-family:'Pixelify Sans',monospace;
+    font-size:14px;
+    letter-spacing:.08em;
+    color:var(--teal);
+    margin:0;
+  }
+  .say{margin:0;display:flex;flex-direction:column;gap:9px;}
+  .say p{
+    margin:0;
+    font-size:15.5px;
+    line-height:1.55;
+    color:var(--cream);
+    max-width:34em;
+  }
+  .say p.quiet{color:var(--muted);}
+
+  .rail{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding-top:18px;
+  }
+  .rail .cap{
+    font-family:'Pixelify Sans',monospace;
+    font-size:11px;
+    letter-spacing:.1em;
+    color:var(--muted);
+    flex:none;
+  }
+  .rail i{flex:1;height:7px;background:var(--ink-2);border:2px solid var(--line);}
+  .rail i.on{background:var(--pink-deep);border-color:var(--pink-deep);}
+  .rail i.now{background:var(--pink);border-color:var(--pink);}
+
+  .choices{display:flex;flex-direction:column;gap:9px;padding-top:12px;}
+  .choices.solo{margin-top:auto;}
+  button{
+    font-family:'Pixelify Sans',monospace;
+    font-size:17px;
+    letter-spacing:.01em;
+    text-align:left;
+    color:var(--cream);
+    background:var(--ink-2);
+    border:2px solid var(--line);
+    border-radius:3px;
+    padding:12px 13px;
+    cursor:pointer;
+    box-shadow:0 4px 0 #0d0a18;
+    transition:transform .08s ease,background .12s ease,border-color .12s ease;
+  }
+  button:hover{background:var(--ink-3);border-color:var(--pink-deep);}
+  button:active{transform:translateY(3px);box-shadow:0 1px 0 #0d0a18;}
+  button:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+  button .n{color:var(--pink);margin-right:8px;}
+  button.go{
+    background:var(--pink);
+    border-color:var(--pink-deep);
+    color:#2a0a18;
+    text-align:center;
+    font-size:19px;
+  }
+  button.go:hover{background:#ff69ab;border-color:var(--pink-deep);}
+
+  .finale{
+    border-left:3px solid var(--pink);
+    padding-left:12px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
+  }
+  .finale p{margin:0;font-size:16px;line-height:1.6;}
+  .sign{font-family:'Pixelify Sans',monospace;font-size:16px;color:var(--gold);}
+  .sign a{color:var(--pink);text-decoration:none;border-bottom:2px solid var(--pink-deep);}
+  .sign a:hover{color:#ff7ab8;}
+  .sign a:focus-visible{outline:3px solid var(--gold);outline-offset:3px;}
+  .wait{
+    margin:6px 0 0;
+    font-family:'Pixelify Sans',monospace;
+    font-size:20px;
+    letter-spacing:.03em;
+    color:var(--cream);
+  }
+  .stats{
+    font-family:'Pixelify Sans',monospace;
+    font-size:11.5px;
+    letter-spacing:.07em;
+    color:var(--muted);
+    border-top:2px dashed var(--line);
+    border-bottom:2px dashed var(--line);
+    padding:7px 0;
+  }
+  @media (prefers-reduced-motion:reduce){
+    button{transition:none;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="stage">
+    <canvas id="cv" width="160" height="96" aria-hidden="true"></canvas>
+    <div class="hud">
+      <span class="step" id="step">АЙГИР</span>
+      <span class="bag" id="bag"></span>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="say" id="say" aria-live="polite"></div>
+    <div class="rail" id="rail" hidden></div>
+    <div class="choices" id="choices"></div>
+  </div>
+</div>
+
+<script>
+/* ============ пиксельный рендер ============ */
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const W = 160, H = 96;
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function rect(x,y,w,h,c){
+  ctx.fillStyle = c;
+  ctx.fillRect(Math.round(x), Math.round(y), Math.max(1,Math.round(w)), Math.max(1,Math.round(h)));
+}
+function bands(y0,y1,cols){
+  const step = (y1-y0)/cols.length;
+  cols.forEach((c,i)=>rect(0, y0+i*step, W, step+1, c));
+}
+function ridge(baseY, amp, color, seed, step){
+  for(let x=0;x<W;x+=step){
+    const n = 0.55 + 0.45*Math.sin((x+seed)*0.055) + 0.25*Math.sin((x+seed)*0.17);
+    const h = Math.max(2, Math.round(amp*n));
+    rect(x, baseY-h, step, H-(baseY-h), color);
+  }
+}
+function trees(y, light, dark, spacing, off){
+  for(let x=-6+off; x<W+6; x+=spacing){
+    const th = 9 + ((Math.abs(x)*7)%6);
+    for(let i=0;i<th;i++){
+      const w = 1 + Math.floor(i*0.55);
+      rect(x-w, y-th+i, w*2+1, 1, (i%4===0) ? dark : light);
+    }
+    rect(x-1, y-1, 2, 3, '#3a2517');
+  }
+}
+function clouds(t, y, color){
+  const off = RM ? 0 : (t*0.006);
+  for(let i=0;i<4;i++){
+    const cx = ((i*47 + off) % (W+40)) - 20;
+    const cy = y + (i%2)*9;
+    rect(cx, cy, 15, 3, color);
+    rect(cx+3, cy-3, 9, 3, color);
+    rect(cx+2, cy+3, 12, 2, color);
+  }
+}
+function water(y, h, t, c1, c2, c3){
+  rect(0, y, W, h, c1);
+  for(let r=0;r<h;r+=2){
+    const ph = RM ? 0 : Math.sin(t*0.003 + r)*6;
+    for(let x=(r*7)%14; x<W; x+=14){
+      rect(x+ph, y+r, 5, 1, r%4===0?c3:c2);
+    }
+  }
+}
+function rocks(baseY, n, x0, gap, w, hMin, pal){
+  for(let i=0;i<n;i++){
+    const x = x0 + i*gap, h = hMin + ((i*13)%22);
+    rect(x, baseY-h, w, h, pal[0]);
+    rect(x, baseY-h, Math.max(2,w/3), h, pal[1]);
+    rect(x+2, baseY-h, Math.max(3,w/2), 4, pal[2]);
+    rect(x+w-3, baseY-h+6, 3, h-6, pal[3]);
+  }
+}
+const HEART = ['.X.X.','XXXXX','XXXXX','.XXX.','..X..'];
+function heart(x, y, c){
+  for(let r=0;r<HEART.length;r++)
+    for(let i=0;i<5;i++)
+      if(HEART[r][i] === 'X') rect(x+i, y+r, 1, 1, c);
+}
+function fireworks(t){
+  const SEQ = [
+    {x:20,  y:26, a:'#ff8fc4', b:'#ffe9a8', o:0},
+    {x:128, y:20, a:'#bff8ff', b:'#ffffff', o:900},
+    {x:80,  y:13, a:'#ffd36e', b:'#ff7ab8', o:1800}
+  ];
+  const P = 2700;
+  SEQ.forEach(f=>{
+    const ph = (t + f.o) % P;
+    if(ph < 800){
+      rect(f.x, 96 - (96 - f.y) * (ph/800), 1, 3, '#fff0b3');
+    } else if(ph < 2000){
+      const k = (ph - 800) / 1200;
+      const r = 2 + k*17;
+      ctx.globalAlpha = Math.max(0, 1 - k);
+      if(k < 0.18) rect(f.x-2, f.y-2, 5, 5, '#ffffff');
+      for(let i=0;i<12;i++){
+        const ang = i*Math.PI/6;
+        rect(f.x + Math.cos(ang)*r, f.y + Math.sin(ang)*r*0.8 + k*k*9, 2, 2, i%2 ? f.a : f.b);
+        rect(f.x + Math.cos(ang+0.26)*r*0.6, f.y + Math.sin(ang+0.26)*r*0.5 + k*k*6, 2, 2, f.b);
+      }
+      ctx.globalAlpha = 1;
+    }
+  });
+}
+function hearts(t){
+  for(let i=0;i<7;i++){
+    const life = (t*0.045 + i*190) % 620;
+    const x = 10 + i*22 + Math.sin(t*0.002 + i)*4;
+    ctx.globalAlpha = Math.min(1, (620 - life)/220) * 0.9;
+    heart(x, 92 - life*0.15, i%2 ? '#ff7ab8' : '#ffd6e6');
+    ctx.globalAlpha = 1;
+  }
+}
+function drawSprite(sp, x, y, flip){
+  const rows = sp.rows;
+  for(let r=0;r<rows.length;r++){
+    for(let c=0;c<rows[r].length;c++){
+      const k = rows[r][c];
+      if(k === '.') continue;
+      const col = flip ? (rows[r].length-1-c) : c;
+      rect(x+col, y+r, 1, 1, sp.pal[k]);
+    }
+  }
+}
+
+/* ============ спрайты ============ */
+/* Диана: чёрная одежда, хвост, розовые кроссовки */
+const GIRL = {
+  pal:{h:'#3a2418', s:'#f9cfa4', e:'#241a12',
+       j:'#26242e', J:'#55525f', d:'#1e1c25', D:'#3a3744',
+       p:'#ff4f9a', P:'#ff9ac6', b:'#4a4654'},
+  rows:[
+    '...hhhhhh...',
+    '..hhhhhhhh..',
+    '.hhhhssssh..',
+    'hhhhhsssss..',
+    'hhhhhsesss..',
+    '.hhhhsssss..',
+    '..hhhssss...',
+    '.hh..sss....',
+    '.hhbjjjjjJ..',
+    '.hbbjjjjjJs.',
+    '..bjjjjjJs..',
+    '..bjjjjjJ...',
+    '...dddddD...',
+    '...ddd.ddD..',
+    '...ddd.ddD..',
+    '...ddd.ddD..',
+    '...ppp.ppp..',
+    '..pppP.pppP.'
+  ]
+};
+const BEAR = {
+  pal:{b:'#7a5230', d:'#4a2f19', m:'#c9a173', e:'#1a1109', n:'#1a1109'},
+  rows:[
+    '.dd..dd.........',
+    '.bbbbbb.........',
+    'bbebbbbb.bbbbb..',
+    'mmmbbbbbbbbbbbb.',
+    'nmmbbbbbbbbbbbbb',
+    '.bbbbbbbbbbbbbbb',
+    '.bbbbbbbbbbbbbbb',
+    '.bbbbbbbbbbbbbb.',
+    '.bb.bb...bb.bb..',
+    '.bb.bb...bb.bb..',
+    '.dd.dd...dd.dd..'
+  ]
+};
+const FISH = {
+  pal:{G:'#1d5c33', g:'#3a9b57', s:'#f0c39a', e:'#241a12', h:'#dcdcdc'},
+  rows:[
+    '..GGGGGG....',
+    '.GGGGGGGG...',
+    '...ssss.....',
+    '..sssss.....',
+    '..sesss.....',
+    '..hhhhh.....',
+    '...hhh......',
+    '..gggggg....',
+    '.Gggggggg...',
+    '.Ggggggggs..',
+    '.Gggggggg...',
+    '..gggggg....',
+    '..gggggg....',
+    '..ggg.ggg...',
+    '..ggg.ggg...',
+    '..ggg.ggg...',
+    '..GGG.GGG...',
+    '.GGGG.GGGG..'
+  ]
+};
+/* Злодей: серое пальто, тёмные очки, БЕЛЫЕ кроссовки */
+const VILLAIN = {
+  pal:{h:'#1a1a1e', s:'#e8bb96', g:'#0c0c10',
+       k:'#73737f', K:'#4e4e5c', w:'#f6f6fa', W:'#c9c9d4'},
+  rows:[
+    '....hhhhh...',
+    '...hhhhhhh..',
+    '..hhssssshh.',
+    '..hggggggh..',
+    '..hsssssshh.',
+    '...ssssss...',
+    '....ssss....',
+    '...kkkkkk...',
+    '..kkkkkkkks.',
+    '.skkkkkkkk..',
+    '..kkkkkkkk..',
+    '..kkkkkkkk..',
+    '..KKKKKKKK..',
+    '...KKK.KKK..',
+    '...KKK.KKK..',
+    '...KKK.KKK..',
+    '...www.www..',
+    '..wwwW.wwwW.'
+  ]
+};
+/* Принц на белом коне, в чёрной шапке */
+const HORSE = {
+  pal:{b:'#141418', s:'#f0c39a', e:'#241a12', c:'#37406b', r:'#22242f',
+       W:'#f6f4ec', m:'#dcd6c8', H:'#8a8070'},
+  rows:[
+    '.........bbbbbb.......',
+    '........bbbbbbbb......',
+    '.........ssssss.......',
+    '........sesssss.......',
+    '.........ssssss.......',
+    '.........cccccc.......',
+    '........cccccccc......',
+    '.......scccccccc......',
+    '........cccccccc......',
+    '.WWWW...cccccccc......',
+    'WWWWWW..cccccccc......',
+    'WWeWWW..cccccccc......',
+    'WmWWWW..cccccccc......',
+    '.mWWWWW.cccccccc......',
+    '..mWWWWWWccccccWWWW...',
+    '...WWWWWWcccWWWWWWWWm.',
+    '...WWWWWWrrrWWWWWWWmm.',
+    '...WWWWWWWWWWWWWWWWm..',
+    '...WWWWWWWWWWWWWWWW...',
+    '...WW..WW....WW..WW...',
+    '...WW..WW....WW..WW...',
+    '...WW..WW....WW..WW...',
+    '...WW..WW....WW..WW...',
+    '...HH..HH....HH..HH...'
+  ]
+};
+
+/* ============ небо ============ */
+const SKY = {
+  dawn:   ['#3b2a63','#6b3a77','#b8517e','#ef7d72','#ffb26b','#ffd9a0'],
+  morning:['#2f6fb5','#4a90d9','#6fb2e8','#9bd0f2','#c8e8fb','#e9f6ff'],
+  day:    ['#1f63ad','#3a86d0','#5fa6e6','#8cc6f3','#bfe2fb','#e4f4ff'],
+  forest: ['#123a2e','#1b5340','#286b4e','#3b8560','#579c74','#7ab392'],
+  gold:   ['#2d3f7a','#4b5aa0','#8a6fa8','#d1809a','#ffab72','#ffd79b'],
+  sunset: ['#231245','#4a1f5c','#8a2f63','#d14f5e','#ff8352','#ffc46b']
+};
+function bob(t, amp){ return RM ? 0 : Math.round(Math.sin(t*0.003)*amp); }
+
+/* ============ сцены ============ */
+const ART = {
+  title(t){
+    bands(0, 60, SKY.dawn);
+    rect(0,60,W,H-60,'#2a1b3d');
+    rect(113,22,11,11,'#fff0b3'); rect(115,20,7,15,'#fff0b3');
+    clouds(t, 30, '#ffd9c2');
+    ridge(66, 30, '#3d2a5c', 10, 2);
+    ridge(72, 22, '#54386f', 120, 2);
+    rocks(74, 5, 54, 9, 7, 26, ['#7a5f8c','#9c7fae','#c0a3cf','#5c476b']);
+    trees(80, '#2b6b47', '#1c4a31', 7, 0);
+    rect(0,80,W,H-80,'#243a2c');
+    drawSprite(GIRL, 24, 62 + bob(t,1), false);
+  },
+
+  station(t){
+    bands(0, 64, SKY.day);
+    clouds(t, 14, '#ffffff');
+    ridge(58, 24, '#4a6f96', 40, 2);
+    trees(64, '#2f7a4f', '#1e5335', 6, 0);
+    rect(0,62,W,H-62,'#4a4238');
+    rect(0,70,W,4,'#6b6152');
+    rect(0,74,W,2,'#8a7f6c');
+    for(let x=0;x<W;x+=6) rect(x,72,4,2,'#5a4b3a');
+    rect(0,71,W,1,'#cfc2a8'); rect(0,75,W,1,'#cfc2a8');
+    rect(0,78,W,H-78,'#3b3a46');
+    rect(0,78,W,2,'#5c5a6b');
+    rect(120,78,2,10,'#6b6152');
+    rect(112,70,20,8,'#2f6f4f');
+    rect(112,70,20,1,'#8fd0ae');
+    rect(115,73,14,2,'#e8f2ec');
+    const tx = RM ? 126 : 118 + ((t*0.02)%40);
+    rect(tx,58,34,14,'#2f6f4f'); rect(tx,58,34,3,'#c9d6cc');
+    rect(tx,66,34,2,'#f0c33c');
+    for(let i=0;i<4;i++) rect(tx+3+i*8,61,5,4,'#a9d8e8');
+    rect(tx-2,70,38,3,'#20402f');
+    drawSprite(GIRL, 30, 62 + bob(t,1), false);
+  },
+
+  fisherman(t){
+    bands(0, 52, SKY.day);
+    clouds(t, 10, '#ffffff');
+    ridge(48, 22, '#4d7fa6', 15, 2);
+    trees(54, '#2f7d50', '#1d5133', 6, 2);
+    rect(0,52,W,10,'#4f4a3a');
+    water(62, 26, t, '#286a99', '#4690c2', '#b4e0f5');
+    rect(0,88,W,H-88,'#54483a');
+    rect(0,60,W,3,'#6d5c46');
+    for(let i=0;i<22;i++) rect(104+i, 44+Math.round(i*0.45), 1, 1, '#e8d9b0');
+    rect(126,54,1,12,'#dcd0ae');
+    const fl = RM ? 0 : Math.round(Math.sin(t*0.004));
+    rect(126,66+fl,2,3,'#ff4f4f');
+    drawSprite(FISH, 96, 42, false);
+    drawSprite(GIRL, 58, 42 + bob(t,1), false);
+  },
+
+  bear(t){
+    bands(0, 30, SKY.morning);
+    rect(0, 22, W, 40, '#0e2a21');
+    trees(40, '#1c5236', '#0f3323', 5, 0);
+    trees(52, '#318954', '#1d5b38', 7, 3);
+    rect(0,58,W,H-58,'#3a4a34');
+    rect(0,64,W,10,'#6b5f44');
+    rect(0,64,W,1,'#8a7d5c');
+    for(let i=0;i<9;i++) rect((i*19)%W, 74+(i%3)*4, 5, 3, '#4a5a42');
+    drawSprite(BEAR, 96, 58 + bob(t,1), false);
+    drawSprite(GIRL, 34, 54 + bob(t,1), false);
+  },
+
+  climb(t){
+    bands(0, 48, SKY.day);
+    clouds(t, 8, '#ffffff');
+    ridge(46, 18, '#5b86a8', 90, 2);
+    rect(0,44,W,H-44,'#6f6270');
+    for(let i=0;i<46;i++){
+      const x = (i*37)%W, y = 46 + ((i*23)%48);
+      const w = 6 + (i%4)*3, h = 4 + (i%3)*2;
+      rect(x, y, w, h, i%3===0 ? '#8b7d90' : '#5f5466');
+      rect(x, y, w, 1, '#a999ad');
+    }
+    trees(50, '#2b6b47', '#1c4a31', 11, 4);
+    drawSprite(GIRL, 60, 44 + bob(t,1), false);
+  },
+
+  /* Зубы Шурале — сцена со злодеем */
+  villain(t){
+    bands(0, 58, SKY.gold);
+    clouds(t, 12, '#ffdcb8');
+    ridge(58, 20, '#6a5490', 150, 2);
+    rocks(78, 6, 16, 23, 13, 34, ['#6f5a82','#93799f','#c3a8cf','#4c3c5c']);
+    rect(0,78,W,H-78,'#43384f');
+    rect(0,78,W,2,'#5d4f6b');
+    drawSprite(VILLAIN, 112, 60 + bob(t,1), true);
+    drawSprite(GIRL, 20, 60 + bob(t,1), false);
+  },
+
+  /* Часы размером с айпад */
+  watch(t){
+    bands(0, 62, SKY.gold);
+    clouds(t, 14, '#ffe6c9');
+    ridge(60, 26, '#6b5a8f', 200, 2);
+    ridge(70, 16, '#8a76a8', 60, 2);
+    rect(0,76,W,H-76,'#5c4f6b');
+    rect(0,76,W,2,'#7d6c8f');
+    if(!RM){
+      for(let i=0;i<5;i++){
+        const y = 20 + i*8;
+        const x = ((t*0.05 + i*40) % (W+50)) - 25;
+        rect(x, y, 16, 1, 'rgba(255,255,255,.4)');
+      }
+    }
+    const pulse = RM ? 0 : (Math.sin(t*0.006)+1)/2;
+    const glow = pulse > .5 ? '#9ff6ff' : '#6fe4f5';
+    drawSprite(GIRL, 26, 58 + bob(t,1), false);
+    const wy = 56 + bob(t,1);
+    rect(37, wy+10, 5, 4, '#26242e');          // ремешок
+    rect(42, wy, 30, 24, '#15141b');           // корпус часов
+    rect(43, wy+1, 28, 22, '#3a3744');         // рамка
+    rect(45, wy+3, 24, 18, glow);              // экран
+    rect(47, wy+5, 14, 2, '#0e2a33');
+    rect(47, wy+9, 20, 2, '#0e2a33');
+    rect(47, wy+13, 10, 2, '#0e2a33');
+    rect(47, wy+17, 17, 2, '#0e2a33');
+    rect(72, wy+8, 2, 6, '#7a7686');           // кнопка
+    for(let i=0;i<4;i++){                      // лучи
+      const d = 4 + i*5 + (RM ? 0 : Math.round(pulse*3));
+      rect(74+d, wy+2+i*6, 7, 2, 'rgba(159,246,255,.5)');
+    }
+  },
+
+  summit(t){
+    bands(0, 66, SKY.sunset);
+    rect(32,28,17,9,'#fff0b3'); rect(35,25,11,15,'#ffe27a');
+    clouds(t, 20, '#ffb98f');
+    ridge(64, 28, '#5a2f63', 80, 2);
+    ridge(72, 18, '#7a4470', 170, 2);
+    water(76, 6, t, '#7a4f86', '#a06f9e', '#d79ec0');
+    trees(84, '#2a4a45', '#1b322f', 7, 0);
+    rect(0,84,W,H-84,'#2b2038');
+    rect(78,70,82,4,'#6f5a82');
+    rect(78,70,82,1,'#a68cb4');
+    rect(82,74,74,12,'#4a3c58');
+    drawSprite(HORSE, 104, 46 + bob(t,1), false);
+    drawSprite(GIRL, 86, 52 + bob(t,1), false);
+    rect(20,80,2,4,'#3a9b57'); rect(20,78,2,2,'#f0c39a');
+    if(RM){
+      heart(30,30,'#ff7ab8'); heart(126,24,'#ffd6e6'); heart(70,18,'#ffb1e0');
+    } else {
+      fireworks(t); hearts(t);
+    }
+  }
+};
+
+/* ============ сценарий ============ */
+const SCENES = {
+  station:{
+    art:'station', label:'СТАНЦИЯ АЙГИР · 10:30',
+    text:['Поезд высадил тебя на станции Айгир в 10:30 и уехал, ничего не объяснив.',
+          'Вокруг лес, горы и полное отсутствие указателей. Гора где-то тут есть, но признаваться, где именно, она не собирается.'],
+    choices:[
+      {t:'Спросить дорогу у парня в зелёном рыболовном костюме',
+       say:['Ты оборачиваешься — а он уже стоит. Он всегда уже стоит.','— Наверх? — спрашивает он, хотя ты ещё ничего не сказала.'],
+       item:'ДОРОГА', to:'fisherman'},
+      {t:'Открыть карту в телефоне',
+       say:['Связи нет. Карта уверенно показывает, что ты находишься в Северном Ледовитом океане.','Телефон явно знает что-то, чего не знаешь ты.'],
+       to:'fisherman'},
+      {t:'Идти на глаз, гора же большая',
+       say:['Ты уверенно ушла в лес и через четыре минуты вышла ровно туда же, откуда начала.','Лес тут любит такие шутки. Это его единственное развлечение.'],
+       to:'fisherman'}
+    ]
+  },
+  fisherman:{
+    art:'fisherman', label:'БЕРЕГ ИНЗЕРА',
+    text:['Парень в зелёном рыболовном костюме сидит у Малого Инзера и смотрит на поплавок так, будто они договорились о встрече.',
+          'Он всегда в зелёном костюме. Есть подозрение, что он в нём родился.',
+          '— Тропа вон там, — говорит он, не оборачиваясь. — Только там медведи.'],
+    choices:[
+      {t:'Уточнить, сколько там медведей',
+       say:['— Достаточно, — отвечает он.','Больше он на эту тему не скажет ничего. Никогда.'],
+       item:'ИНФА', to:'bear'},
+      {t:'Попросить чаю на дорогу',
+       say:['Чай пахнет костром, рекой и немного рыбой.','Это лучший чай в твоей жизни, и ты никому в этом не признаешься.'],
+       item:'ТЕРМОС', to:'bear'},
+      {t:'Спросить, а сам-то он что поймал',
+       say:['Он впервые за всё утро поворачивает голову.','— Я не ловлю, — говорит. — Я жду.','Ты решаешь не уточнять, чего именно.'],
+       item:'УВАЖЕНИЕ', to:'bear'}
+    ]
+  },
+  bear:{
+    art:'bear', label:'ТРОПА',
+    text:['На тропе стоит медведь.',
+          'Он не злой. Он просто очень большой и стоит ровно там, где тебе надо пройти.'],
+    choices:[
+      {t:'Притвориться шишкой',
+       say:['Медведь долго смотрел на шишку в розовых кроссовках.','Подумал. Решил не связываться с тем, чего не понимает.'],
+       item:'МЕДВЕДЬ', to:'climb'},
+      {t:'Запеть погромче',
+       say:['Ты спела так, что медведь ушёл первым.','И, кажется, немного быстрее, чем пришёл.'],
+       item:'МЕДВЕДЬ', to:'climb'},
+      {t:'Предложить бутерброд',
+       say:['Бутерброда больше нет. Медведя тоже.','Обмен признан честным обеими сторонами.'],
+       item:'МЕДВЕДЬ', to:'climb'}
+    ]
+  },
+  climb:{
+    art:'climb', label:'КУРУМНИК',
+    text:['Дальше курумник. Камни размером с чемодан, сложенные тем, кому было абсолютно всё равно.',
+          'Розовые кроссовки впервые в жизни задумались о своей судьбе.'],
+    choices:[
+      {t:'Идти на четвереньках',
+       say:['Некрасиво. Зато вверх.','В горах это вообще считается элегантным.'], to:'villain'},
+      {t:'Цепляться за корни',
+       say:['Корни выдержали.','Ты, кстати, тоже — и это была менее очевидная часть плана.'], to:'villain'},
+      {t:'Прыгать с камня на камень',
+       say:['Восемь прыжков подряд.','Девятый ты решила не делать, и это было самое умное решение за день.'], to:'villain'}
+    ]
+  },
+  villain:{
+    art:'villain', label:'ЗУБЫ ШУРАЛЕ',
+    text:['Из-за скалы выходит он. Человек в белых кроссовках.',
+          'Белых. На курумнике. Ни одного пятнышка. Это должно было насторожить всех ещё на станции.',
+          '— Диана, — говорит он с нехорошей улыбкой. — Я за тобой.'],
+    choices:[
+      {t:'Бежать вверх',
+       say:['Ты бежишь. Он бежит. Белые кроссовки скользят по камням, потому что они не для этого сделаны.','Если честно, они вообще ни для чего не сделаны.'],
+       to:'watch'},
+      {t:'Спросить, зачем он вообще это делает',
+       say:['— Затем, — отвечает злодей.','Мотивация слабая, но он над ней, видимо, и не работал.'],
+       to:'watch'},
+      {t:'Наступить ему на белый кроссовок',
+       say:['На белом кроссовке остаётся отпечаток.','Злодей смотрит на него так, будто у него на глазах рухнул мир. У него действительно рухнул мир.'],
+       item:'ОТПЕЧАТОК', to:'watch'}
+    ]
+  },
+  watch:{
+    art:'watch', label:'ВЫСОТА 780',
+    text:['И тут на запястье оживают твои наручные часы.',
+          'Экран загорается. Часы явно собираются что-то предпринять.'],
+    choices:[
+      {t:'Нажать единственную кнопку',
+       say:['Часы издали звук, который слышат только злодеи в белой обуви.','Он ушёл. Не убежал, а именно ушёл — с достоинством и очень быстро.'],
+       item:'ЧАСЫ', to:'END'},
+      {t:'Показать злодею экран',
+       say:['На экране: 9412 шагов, пульс 138 и надпись «ВЫ ИДЁТЕ СЛИШКОМ МЕДЛЕННО».','Злодей почему-то принял это на свой счёт и обиделся насмерть.'],
+       item:'ЧАСЫ', to:'END'},
+      {t:'Прикрыться часами как щитом',
+       say:['Площади экрана хватило, чтобы закрыть тебя целиком.','Все, кто смеялся над этими часами, официально признаны неправыми.'],
+       item:'ЩИТ', to:'END'}
+    ]
+  }
+};
+
+const ORDER = ['station','fisherman','bear','climb','villain','watch'];
+
+const FINAL = {
+  label:'ВЕРШИНА',
+  lines:[
+    'Ты выходишь наверх. 920 метров. Внизу Малый Инзер, ёлки и очень маленький рыбак, который так ничего и не поймал — потому что он и не ловил.',
+    'А на вершине стоит конь. Белый. На коне сидит принц в чёрной шапке.',
+    'Как он затащил коня сюда по курумнику — вопрос, который вы решили не поднимать ни в тот день, ни потом.',
+    '— Долго же ты, — говорит принц.',
+    'Кроссовки целы. Часы победили. Медведь до сих пор рассказывает про тебя своим.'
+  ],
+  note:'мечтаю увидеть эту улыбку вновь',
+  handle:'dvernoiproeb',
+  wait:'я всё ещё жду'
+};
+
+/* ============ состояние ============ */
+let state = { scene:'title', mode:'start', bag:[], pending:null };
+
+const elStep = document.getElementById('step');
+const elBag = document.getElementById('bag');
+const elSay = document.getElementById('say');
+const elChoices = document.getElementById('choices');
+const elRail = document.getElementById('rail');
+
+function setRail(n){
+  if(!n){ elRail.hidden = true; elChoices.classList.add('solo'); return; }
+  elRail.hidden = false;
+  elChoices.classList.remove('solo');
+  elRail.textContent = '';
+  const cap = document.createElement('span');
+  cap.className = 'cap';
+  cap.textContent = 'ТРОПА';
+  elRail.appendChild(cap);
+  for(let i=1;i<=ORDER.length;i++){
+    const b = document.createElement('i');
+    if(i < n) b.className = 'on';
+    else if(i === n) b.className = 'now';
+    elRail.appendChild(b);
+  }
+}
+function paintBag(){
+  elBag.textContent = '';
+  state.bag.forEach(b=>{
+    const s = document.createElement('span');
+    s.className = 'chip';
+    s.textContent = b;
+    elBag.appendChild(s);
+  });
+}
+function para(lines, cls){
+  elSay.textContent = '';
+  lines.forEach(l=>{
+    const p = document.createElement('p');
+    if(cls) p.className = cls;
+    p.textContent = l;
+    elSay.appendChild(p);
+  });
+}
+function btns(list){
+  elChoices.textContent = '';
+  list.forEach(b=>elChoices.appendChild(b));
+}
+function mkBtn(label, cls, fn, n){
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = cls || '';
+  if(n){
+    const s = document.createElement('span');
+    s.className = 'n';
+    s.textContent = n;
+    b.appendChild(s);
+  }
+  b.appendChild(document.createTextNode(label));
+  b.addEventListener('click', fn);
+  return b;
+}
+
+function showStart(){
+  state.scene = 'title'; state.mode = 'start'; state.bag = []; state.pending = null;
+  elStep.textContent = 'АЙГИР · 920 М';
+  setRail(0);
+  paintBag();
+  elSay.textContent = '';
+  const h = document.createElement('h1'); h.className = 'title'; h.textContent = 'АЙГИР';
+  const s = document.createElement('p'); s.className = 'sub'; s.textContent = 'ВОСХОЖДЕНИЕ В РОЗОВЫХ КРОССОВКАХ';
+  const p = document.createElement('p');
+  p.textContent = 'Шесть развилок, один медведь, один злодей в белых кроссовках и одни очень большие часы. Выбирай что хочешь — дойдёшь в любом случае.';
+  elSay.appendChild(h); elSay.appendChild(s); elSay.appendChild(p);
+  btns([ mkBtn('ПОЕХАЛИ', 'go', ()=>goScene('station')) ]);
+}
+
+function goScene(id){
+  const sc = SCENES[id];
+  state.scene = sc.art; state.mode = 'scene'; state.pending = id;
+  const n = ORDER.indexOf(id) + 1;
+  elStep.textContent = n + '/' + ORDER.length + ' · ' + sc.label;
+  setRail(n);
+  para(sc.text);
+  btns(sc.choices.map((c,i)=>mkBtn(c.t, '', ()=>pick(id, i), '▸')));
+  window.scrollTo({top:0, behavior: RM ? 'auto' : 'smooth'});
+}
+
+function pick(id, i){
+  const c = SCENES[id].choices[i];
+  state.mode = 'reaction';
+  if(c.item && state.bag.indexOf(c.item) === -1){ state.bag.push(c.item); paintBag(); }
+  para(c.say, 'quiet');
+  btns([ mkBtn(c.to === 'END' ? 'НА ВЕРШИНУ' : 'ДАЛЬШЕ', 'go',
+        ()=> c.to === 'END' ? showFinal() : goScene(c.to)) ]);
+}
+
+function showFinal(){
+  state.scene = 'summit'; state.mode = 'final';
+  elStep.textContent = FINAL.label + ' · 920 М';
+  setRail(0);
+  elBag.textContent = '';
+  elSay.textContent = '';
+  const box = document.createElement('div'); box.className = 'finale';
+  FINAL.lines.forEach(l=>{ const p = document.createElement('p'); p.textContent = l; box.appendChild(p); });
+  const nt = document.createElement('p'); nt.className = 'wait'; nt.textContent = FINAL.note;
+  box.appendChild(nt);
+  const sg = document.createElement('p'); sg.className = 'sign';
+  sg.appendChild(document.createTextNode('— tg: '));
+  const a = document.createElement('a');
+  a.href = 'https://t.me/' + FINAL.handle;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.textContent = FINAL.handle;
+  sg.appendChild(a);
+  box.appendChild(sg);
+  const wt = document.createElement('p'); wt.className = 'wait'; wt.textContent = FINAL.wait;
+  box.appendChild(wt);
+  const st = document.createElement('div'); st.className = 'stats';
+  st.textContent = 'ВЫСОТА 920 М · МЕДВЕДЕЙ 1 · ЗЛОДЕЕВ 1 · БЕЛЫХ КРОССОВОК 2 · РОЗОВЫХ КРОССОВОК 2' +
+    (state.bag.length ? ' · В РЮКЗАКЕ: ' + state.bag.join(', ') : '');
+  elSay.appendChild(box); elSay.appendChild(st);
+  btns([ mkBtn('ПРОЙТИ ЗАНОВО', '', showStart) ]);
+}
+
+/* ============ цикл отрисовки ============ */
+function frame(ts){
+  const draw = ART[state.scene] || ART.title;
+  ctx.globalAlpha = 1;
+  ctx.clearRect(0, 0, W, H);
+  rect(0, 0, W, H, '#0d0a18');
+  draw(ts || 0);
+  if(!RM) requestAnimationFrame(frame);
+}
+
+/* ============ запуск ============ */
+function boot(saved){
+  if(saved && saved.mode && saved.mode !== 'start'){
+    state.bag = saved.bag || [];
+    paintBag();
+    if(saved.mode === 'final'){ showFinal(); }
+    else if(saved.pending && SCENES[saved.pending]){ goScene(saved.pending); }
+    else { showStart(); }
+  } else {
+    showStart();
+  }
+  if(RM) frame(0); else requestAnimationFrame(frame);
+}
+
+try{
+  window.claude?.hot?.snapshot(()=>({mode:state.mode, pending:state.pending, bag:state.bag}));
+}catch(e){}
+
+if(window.claude?.hot?.ready){
+  window.claude.hot.ready(boot);
+}else{
+  boot(window.claude?.hot?.data);
+}
+</script>
+</body>
+</html>
