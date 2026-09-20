@@ -399,15 +399,15 @@ const BEAR = {
   ]
 };
 const FISH = {
-  pal:{G:'#1d5c33', g:'#3a9b57', s:'#f0c39a', e:'#241a12', h:'#dcdcdc'},
+  pal:{G:'#1d5c33', g:'#3a9b57', s:'#f0c39a', e:'#241a12'},
   rows:[
     '..GGGGGG....',
     '.GGGGGGGG...',
     '...ssss.....',
     '..sssss.....',
     '..sesss.....',
-    '..hhhhh.....',
-    '...hhh......',
+    '..sssss.....',
+    '...sss......',
     '..gggggg....',
     '.Gggggggg...',
     '.Ggggggggs..',
@@ -537,10 +537,6 @@ const ART = {
     water(62, 26, t, '#286a99', '#4690c2', '#b4e0f5');
     rect(0,88,W,H-88,'#54483a');
     rect(0,60,W,3,'#6d5c46');
-    for(let i=0;i<22;i++) rect(104+i, 44+Math.round(i*0.45), 1, 1, '#e8d9b0');
-    rect(126,54,1,12,'#dcd0ae');
-    const fl = RM ? 0 : Math.round(Math.sin(t*0.004));
-    rect(126,66+fl,2,3,'#ff4f4f');
     drawSprite(FISH, 96, 42, false);
     drawSprite(GIRL, 58, 42 + bob(t,1), false);
   },
@@ -662,18 +658,18 @@ const SCENES = {
   },
   fisherman:{
     art:'fisherman', label:'БЕРЕГ ИНЗЕРА',
-    text:['Парень в зелёном рыболовном костюме сидит у Малого Инзера и смотрит на поплавок так, будто они договорились о встрече.',
-          'Он всегда в зелёном костюме. Есть подозрение, что он в нём родился.',
-          '— Тропа вон там, — говорит он, не оборачиваясь. — Только там медведи.'],
+    text:['Парень в зелёном рыболовном костюме стоит у Малого Инзера. Просто стоит.',
+          'Без удочки, без ведра, без ничего. Он всегда в зелёном костюме. Есть подозрение, что он в нём родился.',
+          '— Тропа вон там, — говорит он, не поворачиваясь. — Только там медведи.'],
     choices:[
       {t:'Уточнить, сколько там медведей',
        say:['— Достаточно, — отвечает он.','Больше он на эту тему не скажет ничего. Никогда.'],
        item:'ИНФА', to:'bear'},
       {t:'Попросить чаю на дорогу',
-       say:['Чай пахнет костром, рекой и немного рыбой.','Это лучший чай в твоей жизни, и ты никому в этом не признаешься.'],
+       say:['Чай пахнет костром и рекой.','Это лучший чай в твоей жизни, и ты никому в этом не признаешься.'],
        item:'ТЕРМОС', to:'bear'},
-      {t:'Спросить, а сам-то он что поймал',
-       say:['Он впервые за всё утро поворачивает голову.','— Я не ловлю, — говорит. — Я жду.','Ты решаешь не уточнять, чего именно.'],
+      {t:'Спросить, что он тут делает',
+       say:['Он впервые за всё утро поворачивает голову.','— Стою, — говорит.','Ты решаешь не уточнять, зачем.'],
        item:'УВАЖЕНИЕ', to:'bear'}
     ]
   },
@@ -746,15 +742,15 @@ const ORDER = ['station','fisherman','bear','climb','villain','watch'];
 const FINAL = {
   label:'ВЕРШИНА',
   lines:[
-    'Ты выходишь наверх. 920 метров. Внизу Малый Инзер, ёлки и очень маленький рыбак, который так ничего и не поймал — потому что он и не ловил.',
+    'Ты выходишь наверх. 920 метров. Внизу Малый Инзер, ёлки и очень маленький парень в зелёном костюме. Он всё ещё просто стоит.',
     'А на вершине стоит конь. Белый. На коне сидит принц в чёрной шапке.',
-    'Как он затащил коня сюда по курумнику — вопрос, который вы решили не поднимать ни в тот день, ни потом.',
-    '— Долго же ты, — говорит принц.',
-    'Кроссовки целы. Часы победили. Медведь до сих пор рассказывает про тебя своим.'
+    'Как он затащил коня сюда по курумнику — вопрос, который вы решили не поднимать ни в тот день, ни потом.'
   ],
-  note:'мечтаю увидеть эту улыбку вновь',
+  postscript:'вот как-то так я запомнил тот день',
+  note:'мечтаю вновь увидеть твою улыбку',
   handle:'dvernoiproeb',
   handle2:'alexeyodino',
+  instUrl:'https://www.instagram.com/alexeyodino/reel/DdK27jdT7GM/',
   wait:'я всё ещё жду'
 };
 
@@ -862,7 +858,9 @@ function showFinal(){
   elSay.textContent = '';
   const box = document.createElement('div'); box.className = 'finale';
   FINAL.lines.forEach(l=>{ const p = document.createElement('p'); p.textContent = l; box.appendChild(p); });
-  const nt = document.createElement('p'); nt.className = 'wait lead'; nt.textContent = FINAL.note;
+  const ps = document.createElement('p'); ps.className = 'wait lead'; ps.textContent = FINAL.postscript;
+  box.appendChild(ps);
+  const nt = document.createElement('p'); nt.className = 'wait'; nt.textContent = FINAL.note;
   box.appendChild(nt);
   const sg = document.createElement('p'); sg.className = 'sign';
   sg.appendChild(document.createTextNode('— tg: '));
@@ -876,7 +874,7 @@ function showFinal(){
   const sg2 = document.createElement('p'); sg2.className = 'sign';
   sg2.appendChild(document.createTextNode('— ну или inst: '));
   const a2 = document.createElement('a');
-  a2.href = 'https://instagram.com/' + FINAL.handle2;
+  a2.href = FINAL.instUrl;
   a2.target = '_blank';
   a2.rel = 'noopener noreferrer';
   a2.textContent = FINAL.handle2;
